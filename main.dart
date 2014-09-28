@@ -14,10 +14,17 @@ void main(List<String> args, port) {
   bot = new BotConnector(port);
   eventManager = bot.createEventManager();
   
-  ServerSocket.bind("0.0.0.0", 8031).then((server) {
-    serverSocket = server;
-    
-    serverSocket.listen(handleSocket);
+
+  runZoned(() {
+    ServerSocket.bind("0.0.0.0", 8031).then((server) {
+      serverSocket = server;
+      
+      serverSocket.listen(handleSocket);
+    });
+  }, onError: (error) {
+    if (error is SocketException) {
+      print("[Remote] ${error.address.address}: ${error.message}");
+    }
   });
   
   eventManager.onShutdown(() {
@@ -33,7 +40,7 @@ void main(List<String> args, port) {
 }
 
 void handleSocket(Socket socket) {
-  print("[Remote] Client Connected (Address: ${socket.address})");
+  print("[Remote] Client Connected (Address: ${socket.address.address})");
   var client = new SocketClient(socket);
   clients.add(client);
   
