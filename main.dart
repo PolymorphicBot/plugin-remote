@@ -6,9 +6,11 @@ import "package:polymorphic_bot/api.dart";
 
 BotConnector bot;
 ServerSocket serverSocket;
+Plugin plugin;
 List<SocketClient> clients = [];
 
-void main(List<String> args, Plugin plugin) {
+void main(List<String> args, Plugin myPlugin) {
+  plugin = myPlugin;
   print("[Remote] Loading Plugin");
   bot = plugin.getBot();
 
@@ -24,7 +26,7 @@ void main(List<String> args, Plugin plugin) {
     }
   });
   
-  bot.onShutdown(() {
+  plugin.onShutdown(() {
     clients.forEach((it) {
       it.sendEvent({
         "event": "client-die"
@@ -57,7 +59,7 @@ void handleSocket(Socket socket) {
     switch (type) {
       case "register":
         var event = json['event'];
-        bot.on(event).listen((event) {
+        plugin.on(event).listen((event) {
           client.sendEvent(event);
         });
         break;
