@@ -9,8 +9,9 @@ ServerSocket serverSocket;
 Plugin plugin;
 List<SocketClient> clients = [];
 
-void main(List<String> args, Plugin myPlugin) {
-  plugin = myPlugin;
+void main(args, port) {
+  plugin = polymorphic(args, port);
+  
   print("[Remote] Loading Plugin");
   bot = plugin.getBot();
 
